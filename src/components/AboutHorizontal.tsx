@@ -3,9 +3,9 @@ import { useRef, useEffect, useMemo, useState } from "react";
 
 import ModelViewer from "./ModelViewer";
 
-/* ─── helpers ─── */
-const PANEL_COUNT = 7;
-const SECTION_HEIGHT = "1200vh"; // Increased total height for slower scrolling
+
+const PANEL_COUNT = 4;
+const SECTION_HEIGHT = "1000vh"; // Increased total height for slower scrolling
 
 
 
@@ -360,55 +360,6 @@ function Panel1({ progress }: { progress: any }) {
   );
 }
 
-function Panel2({ progress }: { progress: any }) {
-  const scale = useTransform(progress, [0.04, 0.12], [0.6, 1]);
-  const bgX = useTransform(progress, [0.04, 0.12], [0, -100]);
-  return (
-    <div className="relative flex-shrink-0 w-screen min-w-[100vw] h-screen flex items-center justify-center overflow-hidden">
-      <Particles count={15} />
-      {/* Maze lines behind */}
-      <div className="absolute inset-0 opacity-[0.06]">
-        <MazeSVG progress={progress} />
-      </div>
-      <motion.div style={{ scale }} className="relative z-10">
-        <motion.div
-          className="font-display text-[clamp(100px,22vw,360px)] leading-[0.8] tracking-tighter text-center"
-          style={{
-            backgroundImage: "linear-gradient(135deg, #18181b 0%, var(--electric) 50%, #18181b 100%)",
-            backgroundSize: "300% 300%",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
-        >
-          <motion.span
-            animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            style={{
-              backgroundImage: "linear-gradient(135deg, #18181b 0%, var(--electric) 50%, #18181b 100%)",
-              backgroundSize: "300% 300%",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              display: "inline-block",
-            }}
-          >
-            THIS IS NOT JUST A ROBOTICS EVENT
-          </motion.span>
-        </motion.div>
-        <motion.p
-          className="text-center font-bebas tracking-[0.5em] text-xs text-zinc-500 mt-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.6 }}
-        >
-          WHERE INTELLIGENCE MEETS THE MAZE
-        </motion.p>
-      </motion.div>
-    </div>
-  );
-}
 function Panel7({ progress }: { progress: any }) {
   const mazeScale = useTransform(progress, [0.12, 0.20], [0.7, 1.1]);
   return (
@@ -483,51 +434,6 @@ function Panel3({ progress }: { progress: any }) {
           clip-path: polygon(30% 0%, 70% 0%, 85% 15%, 85% 45%, 100% 55%, 100% 75%, 80% 100%, 20% 100%, 0% 75%, 0% 55%, 15% 45%, 15% 15%);
         }
       `}</style>
-    </div>
-  );
-}
-
-function Panel4({ progress }: { progress: any }) {
-  const mazeScale = useTransform(progress, [0.28, 0.36], [0.7, 1.1]);
-  return (
-    <div className="relative flex-shrink-0 w-screen min-w-[100vw] h-screen flex items-center justify-center overflow-hidden bg-zinc-950">
-      {/* Dark panel for contrast */}
-      <motion.div style={{ scale: mazeScale }} className="absolute inset-0">
-        <MazeSVG progress={progress} glow />
-      </motion.div>
-      {/* Radar */}
-      <div className="absolute top-[15%] right-[10%] opacity-30">
-        <RadarPulse />
-      </div>
-      <ScanLine />
-      <Particles count={25} />
-      <div className="relative z-10 text-center px-8">
-        <motion.div
-          className="font-display text-[clamp(50px,12vw,180px)] leading-[0.85] text-white"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-        >
-          <WordReveal text="SOLVE THE IMPOSSIBLE" className="text-white" />
-        </motion.div>
-        <motion.div
-          className="mt-8 w-[80px] h-[2px] bg-[var(--electric)] mx-auto"
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.2, delay: 0.6 }}
-        />
-        <motion.p
-          className="mt-6 font-bebas tracking-[0.4em] text-xs text-zinc-500"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 1 }}
-        >
-          NAVIGATE · ADAPT · CONQUER
-        </motion.p>
-      </div>
     </div>
   );
 }
@@ -660,95 +566,6 @@ function Panel8({ progress }: { progress: any }) {
   );
 }
 
-function Panel6({ progress }: { progress: any }) {
-  const scale = useTransform(progress, [0.84, 1], [0.95, 1]);
-  const bgOp = useTransform(progress, [0.84, 0.95], [0, 0.15]);
-  return (
-    <div className="relative flex-shrink-0 w-screen min-w-[100vw] h-screen flex items-center justify-center overflow-hidden bg-zinc-950">
-      {/* Animated lights */}
-      <motion.div
-        className="absolute inset-0"
-        style={{ opacity: bgOp }}
-      >
-        {[
-          { x: "20%", y: "30%", size: 400, color: "var(--electric)" },
-          { x: "80%", y: "60%", size: 300, color: "var(--cyan-neon)" },
-          { x: "50%", y: "80%", size: 350, color: "var(--deep-red)" },
-        ].map((light, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full blur-[120px]"
-            style={{
-              left: light.x,
-              top: light.y,
-              width: light.size,
-              height: light.size,
-              background: light.color,
-              transform: "translate(-50%, -50%)",
-            }}
-            animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 5, repeat: Infinity, delay: i * 1.5 }}
-          />
-        ))}
-      </motion.div>
-      <Particles count={35} />
-      <ScanLine />
-      <motion.div style={{ scale }} className="relative z-10 text-center px-8">
-        <motion.div
-          className="font-display text-[clamp(48px,11vw,170px)] leading-[0.85] text-white"
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.2 }}
-        >
-          <WordReveal text="THE FUTURE OF ROBOTICS" className="text-white" />
-        </motion.div>
-        {/* Stats row */}
-        <motion.div
-          className="mt-12 flex flex-wrap justify-center gap-12 md:gap-20"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-        >
-          {[
-            { val: "24", label: "TEAMS" },
-            { val: "10", label: "COUNTRIES" },
-            { val: "120", label: "ROBOTS" },
-            { val: "72H", label: "NON-STOP" },
-          ].map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="font-display text-[clamp(32px,5vw,72px)] text-white leading-none">{s.val}</div>
-              <div className="mt-2 font-bebas tracking-[0.4em] text-[10px] text-zinc-500">{s.label}</div>
-            </div>
-          ))}
-        </motion.div>
-        {/* Final CTA */}
-        <motion.div
-          className="mt-16"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 1.4 }}
-        >
-          <div className="font-display text-[clamp(28px,6vw,90px)] leading-[0.9] tracking-tight">
-            <span className="text-white">POLYMAZE 2026</span>
-            <span className="text-[var(--electric)]"> — </span>
-            <span className="text-zinc-500">ALGIERS</span>
-          </div>
-          <div className="mt-4 font-bebas tracking-[0.5em] text-xs text-zinc-600">
-            JUNE
-          </div>
-        </motion.div>
-      </motion.div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════
-   MAIN HORIZONTAL SCROLL COMPONENT
-   ═══════════════════════════════════════════════════ */
-
 export default function AboutHorizontal() {
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -761,11 +578,11 @@ export default function AboutHorizontal() {
     offset: ["start start", "end end"],
   });
 
-  // Custom mapping for horizontal scroll: stalling at -500vw so Panel8 fits precisely
+  // Custom mapping for horizontal scroll: stalling at -300vw so Panel8 fits precisely
   const x = useTransform(
     scrollYProgress,
-    [0, 0.08, 0.16, 0.24, 0.32, 0.48, 0.84, 0.92, 1],
-    ["0vw", "-100vw", "-200vw", "-300vw", "-400vw", "-500vw", "-500vw", "-600vw", "-600vw"]
+    [0, 0.16, 0.24, 0.48, 1],
+    ["0vw", "-100vw", "-200vw", "-300vw", "-300vw"]
   );
 
   // We keep a spring strictly for the visual progress bar and panel inner animations
@@ -784,20 +601,17 @@ export default function AboutHorizontal() {
     >
       {/* Sticky viewport — locks to screen while parent scrolls */}
       <div className="sticky top-0 h-screen w-screen overflow-hidden bg-zinc-50">
-        {/* Horizontal track — explicitly 600vw wide to contain all 6 panels */}
+        {/* Horizontal track — explicitly to contain all 4 panels */}
         <motion.div
           ref={trackRef}
           style={{ x, width: `${PANEL_COUNT * 100}vw` }}
           className="flex flex-nowrap h-screen will-change-transform"
         >
           <Panel1 progress={smoothProgress} />
-          <Panel2 progress={smoothProgress} />
           <Panel7 progress={smoothProgress} />
           <Panel3 progress={smoothProgress} />
-          <Panel4 progress={smoothProgress} />
           <Panel8 progress={smoothProgress} />
-          <Panel6 progress={smoothProgress} />
-        </motion.div>
+          </motion.div>
 
         {/* Progress bar */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[120px] h-[2px] bg-zinc-200 z-50 overflow-hidden rounded-full">

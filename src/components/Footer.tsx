@@ -58,15 +58,15 @@ export default function Footer() {
             <div className="h-px w-full bg-zinc-300 lg:mb-8" />
 
             <div className="flex gap-10 lg:justify-start lg:gap-20 mb-8 mt-4 lg:mt-0 lg:mb-12">
-              <div className="flex flex-col gap-1 lg:gap-2 uppercase font-bebas tracking-widest text-zinc-500 font-bold text-[10px] lg:text-[14px]">
+              <div className="flex flex-col gap-1 lg:gap-2 uppercase font-bebas tracking-widest text-zinc-500 font-medium text-[10px] lg:text-[14px]">
                 <a href="https://www.enp.edu.dz/en/" target="_blank" rel="noopener noreferrer" className="cursor-pointer hover:text-[var(--electric)] transition-colors">NATIONAL POLYTECHNIC SCHOOL</a>
                 <a href="mailto:vic@g.enp.edu.dz" className="cursor-pointer hover:text-[var(--electric)] transition-colors">vic@g.enp.edu.dz</a>
               </div>
-              <div className="flex flex-col gap-1 lg:gap-2 uppercase font-bebas tracking-widest text-zinc-500 font-bold text-[10px] lg:text-[14px]">
+              <div className="flex flex-col gap-1 lg:gap-2 uppercase font-bebas tracking-widest text-zinc-500 font-medium text-[10px] lg:text-[14px]">
                 <button className="cursor-pointer hover:text-[var(--electric)] transition-colors text-left">WHAT IS POLYMAZE</button>
                 <button className="cursor-pointer hover:text-[var(--electric)] transition-colors text-left">ABOUT US</button>
               </div>
-              <div className="flex flex-col gap-1 lg:gap-2 uppercase font-bebas tracking-widest text-zinc-500 font-bold text-[10px] lg:text-[14px]">
+              <div className="flex flex-col gap-1 lg:gap-2 uppercase font-bebas tracking-widest text-zinc-500 font-medium text-[10px] lg:text-[14px]">
                 <a href="https://www.facebook.com/vic.enpa" target="_blank" rel="noopener noreferrer" className="cursor-pointer hover:text-[var(--electric)] transition-colors">FACEBOOK</a>
                 <a href="https://www.instagram.com/vic.enp/" target="_blank" rel="noopener noreferrer" className="cursor-pointer hover:text-[var(--electric)] transition-colors">INSTAGRAM</a>
                 <a href="https://www.linkedin.com/company/vicenp/" target="_blank" rel="noopener noreferrer" className="cursor-pointer hover:text-[var(--electric)] transition-colors">LINKEDIN</a>

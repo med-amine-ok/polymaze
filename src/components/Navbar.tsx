@@ -1,59 +1,14 @@
 import { Link } from "@tanstack/react-router";
-import { motion, useMotionValue, useSpring, useScroll, useTransform, useMotionTemplate, AnimatePresence } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, useMotionTemplate, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 
-const LEFT = ["ABOUT", "STATS", "DESTINATION"];
-const RIGHT = ["FAQ", "VIC"];
-
-const MOBILE_MENU_ITEMS = [
+const MENU_ITEMS = [
   { label: "ABOUT", id: "about", image: "/pics/1.webp" },
-  { label: "SCHEDULE", id: "schedule", image: "/pics/2.webp" },
+  { label: "STATS", id: "stats", image: "/pics/2.webp" },
   { label: "DESTINATION", id: "destination", image: "/pics/3.webp" },
   { label: "FAQ", id: "faq", image: "/pics/4.webp" },
-  { label: "PARTNERS", id: "partners", image: "/pics/5.webp" },
+  { label: "VIC", id: "contact", image: "/pics/5.webp" },
 ];
-
-function MagneticLink({ label }: { label: string }) {
-  // We'll map "contact" to the footer section
-  const targetId = label === "VIC" ? "contact" : label.toLowerCase();
-  
-  const ref = useRef<HTMLAnchorElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 220, damping: 18 });
-  const sy = useSpring(y, { stiffness: 220, damping: 18 });
-
-  const onMove = (e: React.MouseEvent) => {
-    const r = ref.current?.getBoundingClientRect();
-    if (!r) return;
-    x.set((e.clientX - (r.left + r.width / 2)) * 0.25);
-    y.set((e.clientY - (r.top + r.height / 2)) * 0.25);
-  };
-  const reset = () => { x.set(0); y.set(0); };
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const target = document.getElementById(targetId);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  return (
-    <motion.a
-      ref={ref}
-      href={`#${targetId}`}
-      onMouseMove={onMove}
-      onMouseLeave={reset}
-      onClick={handleClick}
-      style={{ x: sx, y: sy }}
-      className="group relative flex items-center justify-center font-bebas text-[22px] tracking-[0.2em] transition-colors duration-300 hover:text-[var(--cyan-neon)]"
-    >
-      <span className="relative z-10">{label}</span>
-      <span className="absolute -bottom-2 left-1/2 w-0 h-[2px] bg-[var(--cyan-neon)] shadow-[0_0_8px_var(--cyan-neon)] transition-all duration-300 group-hover:w-full group-hover:left-0" />
-    </motion.a>
-  );
-}
 
 function FullscreenMenu({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -79,7 +34,7 @@ function FullscreenMenu({ isOpen, onClose }: { isOpen: boolean, onClose: () => v
           className="fixed inset-0 z-[90] bg-white text-zinc-900 overflow-hidden flex flex-col"
         >
           {/* Cinematic Image Backgrounds */}
-          {MOBILE_MENU_ITEMS.map((item, i) => (
+          {MENU_ITEMS.map((item, i) => (
             <motion.img
               key={i}
               src={item.image}
@@ -104,11 +59,11 @@ function FullscreenMenu({ isOpen, onClose }: { isOpen: boolean, onClose: () => v
             animate={{ scale: 1, opacity: 0.5 }}
             transition={{ duration: 1, ease: "easeOut" }}
           >
-            {hoveredIndex !== null ? MOBILE_MENU_ITEMS[hoveredIndex].label : "POLYMAZE"}
+            {hoveredIndex !== null ? MENU_ITEMS[hoveredIndex].label : "POLYMAZE"}
           </motion.div>
 
-          <div className="relative z-10 flex-1 flex flex-col justify-center items-center px-4 w-full h-full mt-10">
-            {MOBILE_MENU_ITEMS.map((item, i) => (
+          <div className="relative z-10 flex-1 flex flex-col justify-center items-center px-4 w-full h-full mt-15">
+            {MENU_ITEMS.map((item, i) => (
               <div key={item.id} className="overflow-hidden py-1 md:py-2 w-full flex justify-center">
                 <motion.a
                   href={`#${item.id}`}
@@ -129,7 +84,7 @@ function FullscreenMenu({ isOpen, onClose }: { isOpen: boolean, onClose: () => v
                     delay: 0.1 + (i * 0.05), 
                     ease: [0.77, 0, 0.18, 1] 
                   }}
-                  className="group relative block font-display font-black uppercase leading-[0.8] tracking-tighter text-[15vw] md:text-[10vw] cursor-pointer hover:text-[var(--electric)] transition-colors duration-500"
+                  className="group relative block font-display  uppercase leading-[0.8] tracking-tighter text-[12vw] md:text-[8vw] cursor-pointer hover:text-[var(--electric)] transition-colors duration-500"
                 >
                   <motion.span
                     className="inline-block relative z-10"
@@ -156,8 +111,8 @@ function FullscreenMenu({ isOpen, onClose }: { isOpen: boolean, onClose: () => v
             transition={{ delay: 0.6, duration: 0.5 }}
             className="absolute bottom-8 left-0 w-full px-8 flex justify-between items-center text-zinc-900 font-bebas tracking-widest text-sm z-10"
           >
-            <span>ALGIERS, DZ</span>
-            <span>2026</span>
+            <span>POLYMAZE</span>
+            <span>VIC</span>
           </motion.div>
         </motion.div>
       )}
@@ -198,12 +153,11 @@ export default function Navbar() {
         </div>
 
         <div className="h-full mx-auto max-w-[1600px] px-8 flex items-center justify-between gap-6">
-          <nav className="hidden lg:flex flex-1 items-center justify-end gap-10">
-            {LEFT.map((l) => <MagneticLink key={l} label={l} />)}
-          </nav>
+          {/* Left spacer for centering logo */}
+          <div className="flex-1 hidden md:block" />
 
           {/* Center docking zone */}
-          <div id="logo-dock" className="relative flex-none w-[180px] h-full flex items-center justify-center">
+          <div id="logo-dock" className="relative flex-none w-[180px] h-full flex items-center justify-start md:justify-center">
             <a 
               href="#" 
               onClick={(e) => {
@@ -223,18 +177,16 @@ export default function Navbar() {
             </a>
           </div>
 
-          <nav className="hidden lg:flex flex-1 items-center justify-start gap-10">
-            {RIGHT.map((l) => <MagneticLink key={l} label={l} />)}
-          </nav>
-
-          {/* mobile */}
-          <button 
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden font-bebas tracking-widest text-sm flex items-center gap-2 transition-all hover:text-[var(--electric)] relative z-[101] w-16 justify-end"
-          >
-            <span className={`w-2 h-2 rounded-full animate-pulse ${isMenuOpen ? 'bg-[var(--electric)]' : 'bg-[var(--cyan-neon)]'}`} />
-            {isMenuOpen ? "CLOSE" : "MENU"}
-          </button>
+          {/* Menu Button */}
+          <div className="flex-1 flex justify-end">
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="font-bebas tracking-widest text-lg md:text-xl flex items-center gap-2.5 p-4 -mr-4 transition-all hover:text-[var(--electric)] relative z-[101] cursor-pointer"
+            >
+              <span className={`w-2.5 h-2.5 rounded-full animate-pulse ${isMenuOpen ? 'bg-[var(--electric)]' : 'bg-[var(--cyan-neon)]'}`} />
+              {isMenuOpen ? "CLOSE" : "MENU"}
+            </button>
+          </div>
         </div>
       </motion.header>
 

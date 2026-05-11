@@ -31,7 +31,7 @@ function Index() {
       <Stats />
       <Marquee />
     
-      <Destination />
+      {/* <Destination /> */}
       <FAQ />
       <Marquee reverse />
       <Footer />
