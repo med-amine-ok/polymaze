@@ -1,4 +1,5 @@
 import { Readable } from "node:stream";
+// @ts-ignore
 import server from "../dist/server/server.js";
 
 export default async function handler(req: Request & { headers: Record<string, string | string[] | undefined>; method?: string; url?: string }, res: any) {

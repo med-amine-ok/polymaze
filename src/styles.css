@@ -1,11 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Archivo+Black&family=Inter:wght@400;700;900&display=swap");
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-
 @custom-variant dark (&:is(.dark *));
-
-@import url("https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Archivo+Black&family=Inter:wght@400;700;900&display=swap");
-
 @font-face {
   font-family: 'FWC2026';
   src: url('/font/FWC2026-UltraCondensedMedium.4da29b9d.ttf') format('truetype');
