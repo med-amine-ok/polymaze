@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { motion, useScroll, useTransform, useMotionTemplate, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
 
 const MENU_ITEMS = [
   { label: "ABOUT", id: "about", image: "/pics/1.webp" },
-  { label: "STATS", id: "stats", image: "/pics/2.webp" },
-  { label: "DESTINATION", id: "destination", image: "/pics/3.webp" },
+  // { label: "STATS", id: "stats", image: "/pics/2.webp" },
+  // { label: "DESTINATION", id: "destination", image: "/pics/3.webp" },
   { label: "FAQ", id: "faq", image: "/pics/4.webp" },
   { label: "VIC", id: "contact", image: "/pics/5.webp" },
 ];
@@ -184,7 +185,19 @@ export default function Navbar() {
               className="font-bebas tracking-widest text-lg md:text-xl flex items-center gap-2.5 p-4 -mr-4 transition-all hover:text-[var(--electric)] relative z-[101] cursor-pointer"
             >
               <span className={`w-2.5 h-2.5 rounded-full animate-pulse ${isMenuOpen ? 'bg-[var(--electric)]' : 'bg-[var(--cyan-neon)]'}`} />
-              {isMenuOpen ? "CLOSE" : "MENU"}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={isMenuOpen ? "close" : "menu"}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  className="flex items-center gap-2"
+                >
+                  {isMenuOpen ? <X size={22} className="stroke-[2.5]" /> : <Menu size={22} className="stroke-[2.5]" />}
+                  <span>{isMenuOpen ? "CLOSE" : "MENU"}</span>
+                </motion.div>
+              </AnimatePresence>
             </button>
           </div>
         </div>

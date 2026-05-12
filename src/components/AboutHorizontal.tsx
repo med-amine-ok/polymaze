@@ -4,8 +4,8 @@ import { useRef, useEffect, useMemo, useState } from "react";
 import ModelViewer from "./ModelViewer";
 
 
-const PANEL_COUNT = 4;
-const SECTION_HEIGHT = "1000vh"; // Increased total height for slower scrolling
+const PANEL_COUNT = 2;
+const SECTION_HEIGHT = "600vh"; // Reduced height since we combined panels
 
 
 
@@ -102,6 +102,23 @@ function MazeSVG({ progress, glow = false }: { progress: any; glow?: boolean }) 
   );
 }
 
+/* ─── Counter Component ─── */
+const STATS = [
+  { value: 32, label: "TEAMS", suffix: "" },
+  { value: 24, label: "ROBOTS", suffix: "" },
+  { value: 48, label: "HOURS", suffix: "H" },
+];
+
+function Counter({ to, suffix }: { to: number; suffix: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "0px" });
+  const mv = useMotionValue(0);
+  const sv = useSpring(mv, { stiffness: 60, damping: 20 });
+  const txt = useTransform(sv, (v) => Math.round(v).toString() + suffix);
+  useEffect(() => { if (inView) mv.set(to); }, [inView, mv, to]);
+  return <motion.span ref={ref}>{txt}</motion.span>;
+}
+
 /* ─── Word-by-word text reveal ─── */
 function WordReveal({ text, className = "" }: { text: string; className?: string }) {
   const ref = useRef(null);
@@ -132,141 +149,6 @@ function ScanLine() {
       animate={{ top: ["0%", "100%"] }}
       transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
     />
-  );
-}
-
-/* ─── Code Rain ─── */
-function TechLabelsOverlay() {
-  const [hovered, setHovered] = useState<string | null>(null);
-
-  const callouts = [
-    {
-      id: "arduino",
-      label: "ARDUINO NANO",
-      path: "M 42 50 L 25 50 L 25 35",
-      anchor: { cx: 42, cy: 50 },
-      textPos: { top: "35%", right: "75%" },
-    },
-    {
-      id: "ultrasonic",
-      label: "ULTRASONIC SENSOR",
-      path: "M 55 40 L 75 40 L 75 30",
-      anchor: { cx: 55, cy: 40 },
-      textPos: { top: "30%", left: "75%" },
-    },
-    {
-      id: "ir",
-      label: "IR SENSOR ARRAY",
-      path: "M 43 65 L 25 65 L 25 80 L 10 80",
-      anchor: { cx: 43, cy: 65 },
-      textPos: { top: "80%", right: "75%" },
-    },
-    {
-      id: "motor",
-      label: "L298N MOTOR DRIVER",
-      path: "M 58 60 L 80 60 L 80 85 L 95 85",
-      anchor: { cx: 58, cy: 60 },
-      textPos: { top: "85%", left: "80%" },
-    }
-  ];
-
-  return (
-    <div className="absolute inset-[-10%] pointer-events-none z-20">
-      <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible" preserveAspectRatio="none">
-        <defs>
-          <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="0.5" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-        {callouts.map((c, i) => {
-          const isHovered = hovered === c.id;
-          return (
-            <g key={c.id} style={{ filter: "url(#neon-glow)" }}>
-              {/* Animated Line */}
-              <motion.path
-                d={c.path}
-                fill="none"
-                stroke={isHovered ? "var(--electric)" : "rgba(0, 0, 0, 0.4)"}
-                strokeWidth="0.2"
-                initial={{ pathLength: 0, opacity: 0 }}
-                whileInView={{ pathLength: 1, opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.5, delay: 0.5 + i * 0.3, ease: "easeInOut" }}
-              />
-              {/* Traveling pulse */}
-              <motion.path
-                d={c.path}
-                fill="none"
-                stroke="white"
-                strokeWidth="0.4"
-                strokeDasharray="2 100"
-                animate={{ strokeDashoffset: [100, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity, delay: 2 + i * 0.5, ease: "linear" }}
-                style={{ opacity: 0.8 }}
-              />
-              {/* Anchor Dot */}
-              <motion.circle
-                cx={c.anchor.cx}
-                cy={c.anchor.cy}
-                r="0.6"
-                fill={isHovered ? "white" : "var(--electric)"}
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 + i * 0.3 }}
-              />
-              {/* Ping animation on anchor */}
-              <motion.circle
-                cx={c.anchor.cx}
-                cy={c.anchor.cy}
-                r="0.6"
-                fill="none"
-                stroke="var(--electric)"
-                strokeWidth="0.1"
-                animate={{ scale: [1, 3], opacity: [0.8, 0] }}
-                transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
-              />
-            </g>
-          );
-        })}
-      </svg>
-
-      {/* HTML Labels */}
-      {callouts.map((c, i) => {
-        const isHovered = hovered === c.id;
-        return (
-          <motion.div
-            key={`text-${c.id}`}
-            className="absolute font-mono text-[10px] tracking-[0.2em] pointer-events-auto cursor-crosshair transition-all duration-300"
-            style={{
-              ...c.textPos,
-              color: isHovered ? "white" : "var(--electric)",
-              textShadow: isHovered ? "0 0 8px var(--electric)" : "0 0 4px rgba(0,255,170,0.4)",
-              transform: isHovered ? "scale(1.05)" : "scale(1)",
-            }}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 0.9, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 1.5 + i * 0.3 }}
-            onMouseEnter={() => setHovered(c.id)}
-            onMouseLeave={() => setHovered(null)}
-          >
-            <div className={`flex flex-col ${c.textPos.right ? "items-end" : "items-start"}`}>
-              <div className="flex items-center gap-2">
-                {c.textPos.right && <div className="w-[1px] h-3 bg-[var(--electric)] opacity-50" />}
-                <span className="font-bebas text-[14px] tracking-[0.3em]">{c.label}</span>
-                {!c.textPos.right && <div className="w-[1px] h-3 bg-[var(--electric)] opacity-50" />}
-              </div>
-              <div className="text-[8px] text-zinc-500 opacity-80 mt-1">SYS.OP.{c.id.toUpperCase()}</div>
-            </div>
-          </motion.div>
-        );
-      })}
-    </div>
   );
 }
 
@@ -336,104 +218,77 @@ function RadarPulse() {
    ═══════════════════════════════════════════════════ */
 
 function Panel1({ progress }: { progress: any }) {
+  const mazeScale = useTransform(progress, [0, 0.20], [0.7, 1.1]);
+  const imgY = useTransform(progress, [0, 0.20], [60, -60]);
+  const imgScale = useTransform(progress, [0, 0.20], [0.9, 1.05]);
+  
   return (
-    <div className="relative flex-shrink-0 w-screen min-w-[100vw] h-screen flex items-center justify-center overflow-hidden">
+    <div className="relative flex-shrink-0 w-screen min-w-[100vw] h-screen flex flex-col md:flex-row items-center justify-between overflow-hidden ">
       <GridBg progress={progress} />
-      <Particles count={20} />
-      <MazeSVG progress={progress} />
-      <div className="relative z-10 text-center px-8">
-        <div className="font-display text-[clamp(60px,14vw,220px)] leading-[0.85] tracking-tight text-zinc-900">
-          <WordReveal text="WHAT IS" />
-        </div>
-        <div className="mt-6 font-display text-[clamp(20px,3.5vw,52px)] leading-[1.1] tracking-tight text-zinc-700 max-w-[900px] mx-auto">
-          <WordReveal text="POLYMAZE" />
-        </div>
-        <motion.div
-          className="mt-10 w-[60px] h-[2px] bg-zinc-900 mx-auto"
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.8 }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function Panel7({ progress }: { progress: any }) {
-  const mazeScale = useTransform(progress, [0.12, 0.20], [0.7, 1.1]);
-  return (
-    <div className="relative flex-shrink-0 w-screen min-w-[100vw] h-screen flex items-center justify-center overflow-hidden bg-zinc-950">
       {/* Dark panel for contrast */}
       <motion.div style={{ scale: mazeScale }} className="absolute inset-0">
         <MazeSVG progress={progress} glow />
       </motion.div>
+      
       {/* Radar */}
-      <div className="absolute top-[15%] right-[10%] opacity-30">
+      <div className="absolute top-[15%] left-[5%] opacity-30">
         <RadarPulse />
       </div>
       <ScanLine />
       <Particles count={25} />
-      <div className="relative z-10 text-center px-8 max-w-4xl mx-auto">
-        <motion.div
-          className="font-display text-[clamp(40px,10vw,140px)] leading-[0.85] text-white"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-        >
-          <WordReveal text="THE CHALLENGE" className="text-white" />
-        </motion.div>
-        <motion.div
-          className="mt-8 w-[80px] h-[2px] bg-[var(--electric)] mx-auto"
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.2, delay: 0.6 }}
-        />
-        <motion.p
-          className="mt-8 text-base md:text-xl lg:text-2xl text-zinc-300 leading-relaxed font-light"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 1, duration: 0.8 }}
-        >
-          <strong className="text-white font-normal">POLYMAZE</strong> is a maze-solving competition hosted by the Vision & Innovation Club. Designed robots rely on their programming and sensors to independently navigate the maze, showcasing impressive robotic abilities.
-        </motion.p>
-      </div>
-    </div>
-  );
-}
-function Panel3({ progress }: { progress: any }) {
-  const imgY = useTransform(progress, [0.20, 0.28], [60, -60]);
-  const imgScale = useTransform(progress, [0.20, 0.28], [0.9, 1.05]);
-  const overlayOp = useTransform(progress, [0.22, 0.28], [0, 0.7]);
-  return (
-    <div className="relative flex-shrink-0 w-screen min-w-[100vw] h-screen flex items-center justify-center overflow-hidden">
-      <ScanLine />
-      {/* Robot visual area */}
-      <motion.div style={{ y: imgY, scale: imgScale }} className="relative w-[70vw] max-w-[700px] aspect-square">
-        {/* Blueprint grid */}
-        <div className="absolute inset-[-20%] grid-lines opacity-10" />
-        {/* Robot placeholder — large geometric shape */}
-        <div className="absolute inset-0 flex items-center justify-center scale-[0.9] translate-y-20">
-          <ModelViewer />
+
+      {/* LEFT SIDE: Description */}
+      <div className="relative z-10 w-full md:w-1/2 flex items-center justify-center p-6 md:p-8 lg:p-16 h-[50vh] md:h-full pt-4 md:pt-0">
+        <div className="max-w-xl text-left">
+          <motion.div
+            className="font-display text-[clamp(32px,8vw,140px)] leading-[0.85] text-white"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+          >
+            <WordReveal text="WHAT IS POLYMAZE" className="text-black" />
+          </motion.div>
+          <motion.div
+            className="mt-4 md:mt-8 w-[80px] h-[2px] bg-[var(--electric)]"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: "0px" }}
+            transition={{ duration: 1.2, delay: 0.6 }}
+          />
+          <motion.p
+            className="mt-4 md:mt-8 text-sm md:text-xl lg:text-2xl text-black-300 leading-relaxed font-light"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 1, duration: 0.8 }}
+          >
+            <strong className="text-black font-normal">POLYMAZE</strong> is a maze-solving competition hosted by the Vision & Innovation Club. Designed robots rely on their programming and sensors to independently navigate the maze, showcasing impressive robotic abilities.
+          </motion.p>
         </div>
-        {/* Technical labels overlay */}
-        <TechLabelsOverlay />
-      </motion.div>
+      </div>
+
+      {/* RIGHT SIDE: Robot */}
+      <div className="relative z-10 w-full md:w-1/2 h-[50vh] md:h-full flex items-center justify-center pb-32 md:pb-0">
+        {/* Robot visual area */}
+        <motion.div style={{ y: imgY, scale: imgScale }} className="relative w-[35vh] md:w-[60vw] max-w-[600px] aspect-square -translate-y-8 md:translate-y-0">
+          {/* Blueprint grid */}
+          <div className="absolute inset-[-20%] grid-lines opacity-10" />
+          {/* Robot placeholder — large geometric shape */}
+          <div className="absolute inset-0 flex items-center justify-center scale-[1] md:scale-[0.9] md:translate-y-10">
+            <ModelViewer />
+          </div>
+          
+        </motion.div>
+      </div>
+
       {/* Corner labels */}
-      <div className="absolute top-8 left-8 font-bebas text-[12px] tracking-[0.4em] text-[var(--electric)] font-bold drop-shadow-[0_0_5px_rgba(0,255,170,0.5)]">
+      <div className="absolute top-8 right-8 font-bebas text-[12px] tracking-[0.4em] text-[var(--electric)] font-bold drop-shadow-[0_0_5px_rgba(0,255,170,0.5)]">
         MICROMOUSE · ROBOTICS
       </div>
       <div className="absolute bottom-8 right-8 font-bebas text-[12px] tracking-[0.4em] text-[var(--electric)] font-bold drop-shadow-[0_0_5px_rgba(0,255,170,0.5)]">
         MAZE SOLVER · COMPONENT VIEW
       </div>
-      <style>{`
-        .clip-robot {
-          clip-path: polygon(30% 0%, 70% 0%, 85% 15%, 85% 45%, 100% 55%, 100% 75%, 80% 100%, 20% 100%, 0% 75%, 0% 55%, 15% 45%, 15% 15%);
-        }
-      `}</style>
     </div>
   );
 }
@@ -441,32 +296,58 @@ function Panel3({ progress }: { progress: any }) {
 function Panel8({ progress }: { progress: any }) {
   // Each picture appears one by one, dropping in from close to the camera (Z=1000)
   // and settling into its final collage position. They stay fully visible (opacity 1) once placed.
-  const zVals = Array.from({ length: 12 }, (_, i) => {
-    const start = 0.45 + i * 0.03;
-    return useTransform(progress, [start, start + 0.04], [1000, i * 15]);
+  
+  const zVals = Array.from({ length: 8 }, (_, i) => {
+    const start = 0.45 + i * 0.055;
+    return useTransform(progress, [start, start + 0.06], [1000, i * 15]);
   });
   
-  const yVals = Array.from({ length: 12 }, (_, i) => {
-    const start = 0.45 + i * 0.03;
+  const yVals = Array.from({ length: 8 }, (_, i) => {
+    const start = 0.45 + i * 0.055;
     // Drop in from slightly above
-    return useTransform(progress, [start, start + 0.04], [-200, 0]);
+    return useTransform(progress, [start, start + 0.06], [-200, 0]);
   });
   
-  const opVals = Array.from({ length: 12 }, (_, i) => {
-    const start = 0.45 + i * 0.03;
-    return useTransform(progress, [start, start + 0.04], [0, 1]);
+  const opVals = Array.from({ length: 8 }, (_, i) => {
+    const start = 0.45 + i * 0.055;
+    return useTransform(progress, [start, start + 0.06], [0, 1]);
   });
 
-  const rotVals = Array.from({ length: 12 }, (_, i) => {
-    const start = 0.45 + i * 0.03;
+  const rotVals = Array.from({ length: 8 }, (_, i) => {
+    const start = 0.45 + i * 0.055;
     // Dynamic twisting as they land
-    return useTransform(progress, [start, start + 0.04], [i % 2 === 0 ? -15 : 15, 0]);
+    return useTransform(progress, [start, start + 0.06], [i % 2 === 0 ? -15 : 15, 0]);
   });
 
-  const scaleVals = Array.from({ length: 12 }, (_, i) => {
-    const start = 0.45 + i * 0.03;
-    return useTransform(progress, [start, start + 0.04], [1.5, 1]);
+  const scaleVals = Array.from({ length: 8 }, (_, i) => {
+    const start = 0.45 + i * 0.055;
+    return useTransform(progress, [start, start + 0.06], [1.5, 1]);
   });
+
+  const t1Opacity = useTransform(progress, [0.48, 0.56, 0.64], [0, 1, 0]);
+  const t1Y = useTransform(progress, [0.48, 0.64], [90, -30]);
+  const t1Scale = useTransform(progress, [0.48, 0.64], [0.96, 1.05]);
+  const t1Z = useTransform(progress, [0.48, 0.64], [-120, 140]);
+
+  const t2Opacity = useTransform(progress, [0.58, 0.66, 0.73], [0, 1, 0]);
+  const t2Y = useTransform(progress, [0.58, 0.73], [70, -20]);
+  const t2Scale = useTransform(progress, [0.58, 0.73], [0.98, 1.06]);
+  const t2Z = useTransform(progress, [0.58, 0.73], [-80, 120]);
+
+  const t3Opacity = useTransform(progress, [0.66, 0.74, 0.81], [0, 1, 0]);
+  const t3X = useTransform(progress, [0.66, 0.81], [-40, 30]);
+  const t3Scale = useTransform(progress, [0.66, 0.81], [0.98, 1.08]);
+  const t3Z = useTransform(progress, [0.66, 0.81], [-60, 120]);
+
+  const t4Opacity = useTransform(progress, [0.72, 0.80, 0.88], [0, 1, 0]);
+  const t4Y = useTransform(progress, [0.72, 0.88], [60, -10]);
+  const t4Scale = useTransform(progress, [0.72, 0.88], [0.97, 1.08]);
+  const t4Z = useTransform(progress, [0.72, 0.88], [-40, 110]);
+
+  const t5Opacity = useTransform(progress, [0.82, 0.90, 0.98], [0, 1, 0]);
+  const t5X = useTransform(progress, [0.82, 0.98], [40, -20]);
+  const t5Scale = useTransform(progress, [0.82, 0.98], [0.98, 1.06]);
+  const t5Z = useTransform(progress, [0.82, 0.98], [-80, 160]);
 
   return (
     <div 
@@ -482,74 +363,111 @@ function Panel8({ progress }: { progress: any }) {
       <ScanLine />
       <Particles count={40} />
 
+      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20 pointer-events-none" />
+
+      {/* Kinetic Typography: behind images */}
+      <motion.div className="absolute inset-0 z-10 pointer-events-none" style={{ transformStyle: "preserve-3d" }}>
+        <motion.div
+          style={{ opacity: t1Opacity, y: t1Y, scale: t1Scale, z: t1Z }}
+          className="absolute left-[4%] top-[4%] w-[92vw] text-white/90 mix-blend-screen"
+        >
+          <div className="font-display text-[14vw] md:text-[16vw] font-black leading-none tracking-tight uppercase text-[var(--electric)] drop-shadow-[0_0_25px_rgba(0,255,170,0.35)]">
+            AUTONOMOUS
+          </div>
+          <div className="font-display text-[14vw] md:text-[16vw] font-black leading-none tracking-tight uppercase text-white/95">
+            INTELLIGENCE
+          </div>
+        </motion.div>
+
+        <motion.div
+          style={{ opacity: t2Opacity, y: t2Y, scale: t2Scale, z: t2Z }}
+          className="absolute right-[2%] bottom-[12%] w-[90vw] text-white/80 mix-blend-screen text-right"
+        >
+          <div className="font-display text-[12vw] md:text-[14vw] font-black leading-none tracking-tight uppercase text-white/90 drop-shadow-[0_0_20px_rgba(255,255,255,0.25)]">
+            48 ROBOTS
+          </div>
+        </motion.div>
+      </motion.div>
+
       <motion.div className="absolute inset-0 flex items-center justify-center" style={{ transformStyle: "preserve-3d" }}>
         
         {/* Sequence from Original Assets */}
-        <motion.div style={{ z: zVals[10], y: yVals[10], opacity: opVals[10], rotate: rotVals[10], scale: scaleVals[10] }} className="absolute w-[35vw] aspect-video top-[15%] left-[5%] shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/10">
-          <img src="/pics/participate.webp" className="w-full h-full object-cover" />
+        <motion.div style={{ z: zVals[0], y: yVals[0], opacity: opVals[0], rotate: rotVals[0], scale: scaleVals[0] }} className="absolute w-[35vw] aspect-video top-[15%] left-[5%] shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/10">
+          <img src="/pics/6.webp" className="w-full h-full object-cover sepia-[0.3] contrast-125 saturate-50 hue-rotate-[-10deg] brightness-90" />
           <div className="absolute top-2 left-2 text-[8px] font-mono text-[var(--electric)] uppercase bg-black/40 px-1">CAM_01 / EST_DIST_FAR</div>
         </motion.div>
         
-        <motion.div style={{ z: zVals[1], y: yVals[1], opacity: opVals[1], rotate: rotVals[1], scale: scaleVals[1] }} className="absolute w-[45vw] aspect-[4/3] bottom-[15%] right-[5%] shadow-[0_0_50px_rgba(0,0,0,0.9)] border border-[var(--electric)]/20">
-          <div className="absolute inset-0 bg-[var(--electric)]/10 mix-blend-overlay z-10" />
-          <img src="/pics/young.webp" className="w-full h-full object-cover" />
-          <div className="absolute bottom-2 right-2 text-[8px] font-mono text-[var(--electric)] uppercase bg-black/50 px-1">SYS_OPT_02</div>
-        </motion.div>
-        
-        <motion.div style={{ z: zVals[2], y: yVals[2], opacity: opVals[2], rotate: rotVals[2], scale: scaleVals[2] }} className="absolute w-[35vw] aspect-square top-[35%] left-[20%] shadow-[0_0_80px_rgba(0,0,0,1)] border border-white/20">
-          <img src="/pics/robot.webp" className="w-full h-full object-cover" />
-          <div className="absolute bottom-2 left-2 text-[10px] font-mono text-white tracking-widest bg-black/40 px-1">AUTONOMOUS ENGAGEMENT</div>
-        </motion.div>
-        
-        <motion.div style={{ z: zVals[3], y: yVals[3], opacity: opVals[3], rotate: rotVals[3], scale: scaleVals[3] }} className="absolute w-[50vw] aspect-video top-[10%] right-[15%] shadow-[0_0_100px_rgba(0,0,0,1)] border border-[var(--electric)]/40">
-          <img src="/pics/prepare.webp" className="w-full h-full object-cover mix-blend-luminosity" />
-          <div className="absolute inset-0 border-[1px] border-[var(--electric)]/20 scale-[0.98]" />
-        </motion.div>
-        
-        <motion.div style={{ z: zVals[4], y: yVals[4], opacity: opVals[4], rotate: rotVals[4], scale: scaleVals[4] }} className="absolute w-[80vw] aspect-video bottom-[20%] left-[10%] shadow-[0_0_150px_rgba(0,0,0,1)] border border-white/30">
-           <img src="/pics/your.webp" className="w-full h-full object-cover" />
+        <motion.div style={{ z: zVals[1], y: yVals[1], opacity: opVals[1], rotate: rotVals[1], scale: scaleVals[1] }} className="absolute w-[80vw] aspect-video bottom-[20%] left-[10%] shadow-[0_0_150px_rgba(0,0,0,1)] border border-white/30">
+           <img src="/pics/your.webp" className="w-full h-full object-cover sepia-[0.3] contrast-125 saturate-50 hue-rotate-[-10deg] brightness-90" />
            <div className="absolute top-4 left-4 text-xs font-bebas text-white tracking-[0.5em] bg-black/80 px-2 py-1 border border-white/20">PRE-CALCULATION</div>
         </motion.div>
 
         {/* Sequence from New Assets 1 - 7 */}
-        <motion.div style={{ z: zVals[5], y: yVals[5], opacity: opVals[5], rotate: rotVals[5], scale: scaleVals[5] }} className="absolute w-[35vw] aspect-[4/3] top-[25%] right-[20%] shadow-[0_0_80px_rgba(0,0,0,1)] border border-white/20">
-          <img src="/pics/1.webp" className="w-full h-full object-cover brightness-75" />
+        <motion.div style={{ z: zVals[2], y: yVals[2], opacity: opVals[2], rotate: rotVals[2], scale: scaleVals[2] }} className="absolute w-[35vw] aspect-[4/3] top-[25%] right-[20%] shadow-[0_0_80px_rgba(0,0,0,1)] border border-white/20">
+          <img src="/pics/1.webp" className="w-full h-full object-cover brightness-75 sepia-[0.4] contrast-[1.15] saturate-50 hue-rotate-[-10deg]" />
           <div className="absolute bottom-2 left-2 text-[10px] font-mono text-[var(--electric)] uppercase bg-black/40 px-1">RECALIBRATE_01</div>
         </motion.div>
 
-        <motion.div style={{ z: zVals[6], y: yVals[6], opacity: opVals[6], rotate: rotVals[6], scale: scaleVals[6] }} className="absolute w-[45vw] aspect-video bottom-[10%] left-[15%] shadow-[0_0_100px_rgba(0,0,0,1)] border border-[var(--electric)]/20">
+        <motion.div style={{ z: zVals[3], y: yVals[3], opacity: opVals[3], rotate: rotVals[3], scale: scaleVals[3] }} className="absolute w-[45vw] aspect-video bottom-[10%] left-[15%] shadow-[0_0_100px_rgba(0,0,0,1)] border border-[var(--electric)]/20">
           <div className="absolute inset-0 bg-[var(--electric)]/10 mix-blend-overlay z-10" />
-          <img src="/pics/2.webp" className="w-full h-full object-cover" />
+          <img src="/pics/2.webp" className="w-full h-full object-cover sepia-[0.3] contrast-125 saturate-50 hue-rotate-[-10deg] brightness-90" />
           <div className="absolute top-2 right-2 text-[8px] font-mono text-[var(--electric)] uppercase bg-black/50 px-1">SYS_MEM_02</div>
         </motion.div>
 
-        <motion.div style={{ z: zVals[7], y: yVals[7], opacity: opVals[7], rotate: rotVals[7], scale: scaleVals[7] }} className="absolute w-[30vw] aspect-[3/4] top-[10%] left-[10%] shadow-[0_0_120px_rgba(0,0,0,1)] border border-white/30">
-          <img src="/pics/3.webp" className="w-full h-full object-cover mix-blend-luminosity" />
+        <motion.div style={{ z: zVals[4], y: yVals[4], opacity: opVals[4], rotate: rotVals[4], scale: scaleVals[4] }} className="absolute w-[30vw] aspect-[3/4] top-[10%] left-[10%] shadow-[0_0_120px_rgba(0,0,0,1)] border border-white/30">
+          <img src="/pics/3.webp" className="w-full h-full object-cover mix-blend-luminosity sepia-[0.3] contrast-125 saturate-50 hue-rotate-[-10deg]" />
           <div className="absolute bottom-2 left-2 text-[10px] font-mono text-white tracking-widest bg-black/50 px-1">ANALYTICS_ON</div>
         </motion.div>
 
-        <motion.div style={{ z: zVals[8], y: yVals[8], opacity: opVals[8], rotate: rotVals[8], scale: scaleVals[8] }} className="absolute w-[50vw] aspect-video top-[40%] right-[5%] shadow-[0_0_150px_rgba(0,0,0,1)] border border-[var(--electric)]/40">
-          <img src="/pics/4.webp" className="w-full h-full object-cover" />
+        <motion.div style={{ z: zVals[5], y: yVals[5], opacity: opVals[5], rotate: rotVals[5], scale: scaleVals[5] }} className="absolute w-[50vw] aspect-video top-[40%] right-[5%] shadow-[0_0_150px_rgba(0,0,0,1)] border border-[var(--electric)]/40">
+          <img src="/pics/4.webp" className="w-full h-full object-cover sepia-[0.3] contrast-125 saturate-50 hue-rotate-[-10deg] brightness-90" />
           <div className="absolute inset-0 border-[1px] border-[var(--electric)]/20 scale-[0.98]" />
           <div className="absolute bottom-4 left-4 text-xs font-bebas text-[var(--electric)] tracking-[0.5em] bg-black/80 px-2 py-1 border border-white/20">SENSOR_SYNC</div>
         </motion.div>
 
-        <motion.div style={{ z: zVals[11], y: yVals[11], opacity: opVals[11], rotate: rotVals[11], scale: scaleVals[11] }} className="absolute w-[60vw] aspect-[16/9] bottom-[20%] left-[20%] shadow-[0_0_150px_rgba(0,0,0,1)] border border-white/30">
-           <img src="/pics/5.webp" className="w-full h-full object-cover " />
+        <motion.div style={{ z: zVals[6], y: yVals[6], opacity: opVals[6], rotate: rotVals[6], scale: scaleVals[6] }} className="absolute w-[60vw] aspect-[16/9] bottom-[20%] left-[20%] shadow-[0_0_150px_rgba(0,0,0,1)] border border-white/30">
+           <img src="/pics/5.webp" className="w-full h-full object-cover sepia-[0.3] contrast-125 saturate-50 hue-rotate-[-10deg] brightness-90" />
            <div className="absolute top-4 left-4 text-xs font-bebas text-[var(--electric)] tracking-[0.5em] bg-black/80 px-2 py-1 border border-[var(--electric)]/30">DATA_LINK_ESTABLISHED</div>
         </motion.div>
 
-        <motion.div style={{ z: zVals[0], y: yVals[0], opacity: opVals[0], rotate: rotVals[0], scale: scaleVals[0] }} className="absolute w-[55vw] aspect-video top-[15%] right-[15%] shadow-[0_0_150px_rgba(0,0,0,1)] border border-[var(--electric)]/30">
-           <img src="/pics/6.webp" className="w-full h-full object-cover" />
+        <motion.div style={{ z: zVals[7], y: yVals[7], opacity: opVals[7], rotate: rotVals[7], scale: scaleVals[7] }} className="absolute w-[55vw] aspect-video top-[15%] right-[15%] shadow-[0_0_150px_rgba(0,0,0,1)] border border-[var(--electric)]/30">
+           <img src="/pics/participate.webp" className="w-full h-full object-cover sepia-[0.3] contrast-125 saturate-50 hue-rotate-[-10deg] brightness-90" />
            <div className="absolute bottom-4 right-4 text-xs font-bebas text-[var(--electric)] tracking-[0.5em] bg-black/80 px-2 py-1 border border-white/20">SYSTEM_OVERRIDE</div>
         </motion.div>
 
-        <motion.div style={{ z: zVals[9], y: yVals[9], opacity: opVals[9], rotate: rotVals[9], scale: scaleVals[9] }} className="absolute w-[80vw] aspect-video bottom-[10%] left-[10%] shadow-[0_0_200px_rgba(0,0,0,1)] border border-[var(--electric)]">
-           <div className="absolute inset-0 bg-[var(--electric)]/5 mix-blend-overlay z-10" />
-           <img src="/pics/7.webp" className="w-full h-full object-cover" />
-           <div className="absolute top-4 left-4 text-sm font-bebas text-[var(--electric)] tracking-[0.5em] bg-black/80 px-2 py-1 border border-[var(--electric)]">FINAL_RND_VIEW</div>
+      </motion.div>
+
+      {/* Kinetic Typography: overlapping images */}
+      <motion.div className="absolute inset-0 z-25 pointer-events-none" style={{ transformStyle: "preserve-3d" }}>
+        <motion.div
+          style={{ opacity: t3Opacity, x: t3X, scale: t3Scale, z: t3Z }}
+          className="absolute left-[4%] top-[32%] w-[92vw] text-white/90 mix-blend-lighten"
+        >
+          <div className="font-display text-[16vw] md:text-[18vw] font-black leading-none tracking-tight uppercase text-white/95 drop-shadow-[0_0_30px_rgba(255,255,255,0.35)]">
+            ONE MAZE
+          </div>
         </motion.div>
 
+        <motion.div
+          style={{ opacity: t4Opacity, y: t4Y, scale: t4Scale, z: t4Z }}
+          className="absolute right-[4%] top-[58%] w-[92vw] text-white/85 mix-blend-screen text-right"
+        >
+          <div className="font-display text-[12vw] md:text-[14vw] font-black leading-none tracking-tight uppercase text-[var(--electric)] drop-shadow-[0_0_25px_rgba(0,255,170,0.35)]">
+            48 HOURS
+          </div>
+        </motion.div>
+
+        <motion.div
+          style={{ opacity: t5Opacity, x: t5X, scale: t5Scale, z: t5Z }}
+          className="absolute left-[6%] top-[8%] w-[92vw] text-white/95 mix-blend-screen"
+        >
+          <div className="font-display text-[12vw] md:text-[14vw] font-black leading-none tracking-tight uppercase text-white/95">
+            THE FUTURE
+          </div>
+          <div className="font-display text-[12vw] md:text-[14vw] font-black leading-none tracking-tight uppercase text-[var(--electric)] drop-shadow-[0_0_25px_rgba(0,255,170,0.35)]">
+            OF ROBOTICS
+          </div>
+        </motion.div>
       </motion.div>
 
      
@@ -562,6 +480,25 @@ function Panel8({ progress }: { progress: any }) {
            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-10 h-[2px] bg-[var(--electric)]" />
         </div>
       </div>
+
+      {/* HUGE STATS OVERLAY OVER PICS */}
+      {/* <motion.div 
+        className="absolute inset-0 z-40 pointer-events-none flex flex-col items-center justify-center pt-10"
+        style={{ opacity: useTransform(progress, [0.8, 0.95], [0, 1]) }}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-32 text-center drop-shadow-[0_0_20px_rgba(0,0,0,0.8)] px-8">
+          {STATS.map((s, i) => (
+             <div key={i} className="flex flex-col items-center">
+               <div className="font-display text-[clamp(60px,10vw,150px)] text-white font-bold leading-none tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] mix-blend-screen">
+                 <Counter to={s.value} suffix={s.suffix} />
+               </div>
+               <div className="font-bebas text-lg md:text-2xl text-[var(--electric)] tracking-[0.5em] mt-2 drop-shadow-[0_0_5px_rgba(0,255,170,0.8)]">
+                 {s.label}
+               </div>
+             </div>
+          ))}
+        </div>
+      </motion.div> */}
     </div>
   );
 }
@@ -578,11 +515,11 @@ export default function AboutHorizontal() {
     offset: ["start start", "end end"],
   });
 
-  // Custom mapping for horizontal scroll: stalling at -300vw so Panel8 fits precisely
+  // Custom mapping for horizontal scroll: stalling at -100vw so Panel8 fits precisely
   const x = useTransform(
     scrollYProgress,
-    [0, 0.16, 0.24, 0.48, 1],
-    ["0vw", "-100vw", "-200vw", "-300vw", "-300vw"]
+    [0, 0.5, 1],
+    ["0vw", "-100vw", "-100vw"]
   );
 
   // We keep a spring strictly for the visual progress bar and panel inner animations
@@ -601,15 +538,13 @@ export default function AboutHorizontal() {
     >
       {/* Sticky viewport — locks to screen while parent scrolls */}
       <div className="sticky top-0 h-screen w-screen overflow-hidden bg-zinc-50">
-        {/* Horizontal track — explicitly to contain all 4 panels */}
+        {/* Horizontal track — explicitly to contain all 2 panels */}
         <motion.div
           ref={trackRef}
           style={{ x, width: `${PANEL_COUNT * 100}vw` }}
           className="flex flex-nowrap h-screen will-change-transform"
         >
           <Panel1 progress={smoothProgress} />
-          <Panel7 progress={smoothProgress} />
-          <Panel3 progress={smoothProgress} />
           <Panel8 progress={smoothProgress} />
           </motion.div>
 

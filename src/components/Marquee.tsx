@@ -9,11 +9,11 @@ export default function Marquee({ reverse = false }: { reverse?: boolean }) {
       <div className="marquee-track" style={{ animationDirection: reverse ? "reverse" : "normal" }}>
         {items.map((t, i) => (
           <div key={i} className="flex items-center gap-10 pr-10">
-            <span className="font-display text-[clamp(40px,7vw,110px)] leading-none">{t}</span>
+            <span className="font-display text-[clamp(28px,5.2vw,80px)] leading-none">{t}</span>
             <motion.span
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
-              className="inline-block text-[color:var(--electric)] font-display text-[clamp(40px,7vw,110px)]"
+              className="inline-block text-[color:var(--electric)] font-display text-[clamp(28px,5.2vw,80px)]"
             >
               ✺
             </motion.span>

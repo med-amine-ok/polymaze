@@ -58,7 +58,7 @@ export default function Hero() {
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 will-change-transform z-20 pointer-events-none"
         >
           {/* The main logo mask container */}
-          <div className="relative w-[clamp(500px,95vw,1600px)] aspect-square md:aspect-[2/1] flex flex-col items-center">
+          <div className="relative w-[clamp(200px,80vw,1200px)] aspect-square md:aspect-[2/1] flex flex-col items-center">
             
             {/* DESKTOP Mask (hidden on mobile) */}
             <div
@@ -68,11 +68,11 @@ export default function Hero() {
                 backgroundImage: "url('/participate.webp')",
                 
                 // IMPORTANT: Put the 26 logo (black shape with transparent background) in 'public'
-                WebkitMaskImage: "url('/plmz.png')",
+                WebkitMaskImage: "url('/plmz.svg')",
                 WebkitMaskSize: "contain",
                 WebkitMaskRepeat: "no-repeat",
                 WebkitMaskPosition: "center",
-                maskImage: "url('/plmz.png')",
+                maskImage: "url('/plmz.svg')",
                 maskSize: "contain",
                 maskRepeat: "no-repeat",
                 maskPosition: "center",

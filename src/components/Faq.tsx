@@ -43,7 +43,7 @@ function FAQItem({ question, answer }: { index: number; question: string; answer
         <motion.span 
           animate={{ scale: isOpen ? 1.02 : 1 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className={`font-display text-[clamp(32px,5vw,72px)] tracking-tight leading-[0.9] text-left transition-colors duration-500 origin-left ${isOpen ? "text-[var(--cyan-neon)]" : "text-zinc-900 group-hover:text-zinc-400"}`}
+          className={`font-display text-[clamp(24px,4vw,56px)] tracking-tight leading-[0.9] text-left transition-colors duration-500 origin-left ${isOpen ? "text-[var(--cyan-neon)]" : "text-zinc-900 group-hover:text-zinc-400"}`}
         >
           {question}
         </motion.span>
