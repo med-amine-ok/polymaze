@@ -52,6 +52,10 @@ export default function Content() {
   });
 
   const storeTeamRegistration = async (payload: dataRegistrationProps) => {
+    if (!supabase) {
+      setError("Supabase is not configured for this deployment.");
+      return;
+    }
     setIsLoading(true);
     setError("");
 
@@ -127,6 +131,10 @@ export default function Content() {
   };
 
   const storeMemberRegistration = async (payload: dataRegistrationProps) => {
+    if (!supabase) {
+      setError("Supabase is not configured for this deployment.");
+      return;
+    }
     try {
       setIsLoading(true);
 
