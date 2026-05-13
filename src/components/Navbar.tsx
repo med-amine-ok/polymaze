@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+
 import { motion, useScroll, useTransform, useMotionTemplate, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
@@ -179,11 +180,17 @@ export default function Navbar() {
           </div>
 
           {/* Menu Button */}
-          <div className="flex-1 flex justify-end">
-            <button 
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="font-bebas tracking-widest text-lg md:text-xl flex items-center gap-2.5 p-4 -mr-4 transition-all hover:text-[var(--electric)] relative z-[101] cursor-pointer"
-            >
+          <div className="flex-1 flex items-center justify-end gap-3">
+              <Link
+                to="/register"
+                className="inline-flex items-center justify-center rounded-full border border-[var(--electric)] px-4 py-2 text-xs font-bebas tracking-widest text-zinc-900 transition-all hover:bg-[var(--electric)] hover:text-white md:px-5 md:text-sm"
+              >
+                REGISTER
+              </Link>
+              <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="font-bebas tracking-widest text-lg md:text-xl flex items-center gap-2.5 p-4 -mr-4 transition-all hover:text-[var(--electric)] relative z-[101] cursor-pointer"
+              >
               <span className={`w-2.5 h-2.5 rounded-full animate-pulse ${isMenuOpen ? 'bg-[var(--electric)]' : 'bg-[var(--cyan-neon)]'}`} />
               <AnimatePresence mode="wait">
                 <motion.div

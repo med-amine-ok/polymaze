@@ -1,0 +1,28 @@
+export type dataRegistrationProps = {
+  teamAction: string;
+  teamId: string;
+  teamName: string;
+  teamMembers: string;
+  membersCount: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  programmingSkill: string;
+  electronicsSkill: string;
+  mechanicalSkill: string;
+  phone: string;
+  wilaya: string;
+  dob: string;
+  university: string;
+  fos: string;
+  yos: string;
+  motivation: string;
+  howHeard: string;
+  howHeardOther: string;
+  participatedBefore: string;
+  previousCompetitionDetails: string;
+  formalRoboticsTraining: string;
+  roboticsTrainingDetails: string;
+  anythingElse: string;
+  code: string;
+};
